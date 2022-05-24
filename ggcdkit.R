@@ -427,6 +427,7 @@ make_templ_element<-function(tpl_el){
   # reservoirs
   #### TODO there are many cases and subcases with reservoirs
   # Perhaps, consider moving it out of the main function and write ggAddReservoirs, or something
+  # and add it manually rather than risking to break everything
   # The real difficulty here are the Debon cationic parameters that do not have the same names 
   # in diagram templates and in debon.idealmins.data
   # Probably easier to rewrite the template and the idealmins to align them...
