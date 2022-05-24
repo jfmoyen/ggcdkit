@@ -427,7 +427,11 @@ make_templ_element<-function(tpl_el){
   # reservoirs
   #### TODO there are many cases and subcases with reservoirs
   # Perhaps, consider moving it out of the main function and write ggAddReservoirs, or something
-  if(tpl_el$type=="reservoirs"){ 
+  # The real difficulty here are the Debon cationic parameters that do not have the same names 
+  # in diagram templates and in debon.idealmins.data
+  # Probably easier to rewrite the template and the idealmins to align them...
+  # Also they don't work on ternary...
+   if(tpl_el$type=="reservoirs"){ 
     cat("Trying to parse reservoir from template - EXPERIMENTAL\n")
     try(gg_el <- makeReservoirsElement(tpl_el))
  }
