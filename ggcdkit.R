@@ -130,8 +130,11 @@ makePolygonElement <- function(tpl_el){
   #' Convert a figaro polygon template element into a ggplot layer
   #' @param tpl_el: the figaro template element (which is a list with several elements)
 
-  the_poly <- tibble(x=tpl_el$x,y=tpl_el$y)
-  gg_el <- geom_polygon(data=the_poly,aes(x,y,fill=tpl_el$col,color=NA))
+  # the_poly <- tibble(x=tpl_el$x,y=tpl_el$y)
+  # gg_el <- geom_polygon(data=the_poly,aes(x,y,fill=tpl_el$col,color=NA))
+  
+  gg_el <- ggplot2::annotate(geom="polygon",
+                             x=tpl_el$x,y=tpl_el$y,fill=tpl_el$col,color=NA)
   
   return(gg_el)
 }
@@ -149,10 +152,17 @@ makeArrowsElement <- function(tpl_el){
                    "last",
                    "both")
     
-    gg_el <- geom_segment(aes(x=tpl_el$x0,y=tpl_el$y0,
+    # gg_el <- geom_segment(aes(x=tpl_el$x0,y=tpl_el$y0,
+    #                           xend=tpl_el$x1,yend=tpl_el$y1,
+    #                           color=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd),
+    #                           arrow=arrow(angle=tpl_el$angle,length=unit(tpl_el$length,"inches"),ends=ends))
+    
+    gg_el <- ggplot2::annotate(geom="segment",
+                              x=tpl_el$x0,y=tpl_el$y0,
                               xend=tpl_el$x1,yend=tpl_el$y1,
-                              color=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd),
+                              color=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd,
                               arrow=arrow(angle=tpl_el$angle,length=unit(tpl_el$length,"inches"),ends=ends))
+
     
     return(gg_el)
     
@@ -275,10 +285,16 @@ makePointsElement <- function(tpl_el){
   
   if(is.null(tpl_el$cex)){cex<-1}else{cex<-tpl_el$cex}
   
-  gg_el <- geom_point(data=the_pts,aes(x,y,
-                                       colour=tpl_el$col,
-                                       shape=tpl_el$pch,
-                                       size=cex*point_size_magic_nbr))
+  gg_el <- ggplot2::annotate(geom="point",
+                             x,y,
+                             colour=tpl_el$col,
+                             shape=tpl_el$pch,
+                             size=cex*point_size_magic_nbr)
+  
+  # gg_el <- geom_point(data=the_pts,aes(x,y,
+  #                                      colour=tpl_el$col,
+  #                                      shape=tpl_el$pch,
+  #                                      size=cex*point_size_magic_nbr))
   
   return(gg_el)
 }
