@@ -1,7 +1,8 @@
 #### Setup ####
 
-setwd("D:/GitProjects/ggcdkit")
-source("ggcdkit.R")
+library(GCDkitDevelop)
+
+source("D:/GitProjects/ggcdkit/ggcdkit.R")
 
 data(atacazo)
 accessVar("atacazo")

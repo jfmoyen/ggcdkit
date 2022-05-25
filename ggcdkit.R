@@ -6,7 +6,11 @@ library(tidyverse)
  # GCDkit is not very careful about that, so we load it last to erase the original (ggplot) annotate
  # Use ggplot annotation layers with EXTREME CARE !
 
-library(GCDkitDevelop)
+library(conflicted)
+annotate <- GCDkitDevelop::annotate
+## Equivalent to:
+#GCDkitDevelop::.assignWithNamespaceHard("annotate",GCDkitDevelop::annotate)
+
 
 theme_gcdkit <- function () { 
   theme_bw(base_size=12, base_family="Avenir") %+replace% 
