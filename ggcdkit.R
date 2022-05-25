@@ -236,36 +236,33 @@ makeAblineElement <- function(tpl_el){
   if(is.null(tpl_el$lty)){lty<-"solid"}else{lty<-tpl_el$lty}
   if(is.null(tpl_el$lwd)){lwd<-1}else{lwd<-tpl_el$lwd}
   
+  # abline, hline, vline are not supported by annotate
+  # https://github.com/tidyverse/ggplot2/issues/4719
+  
   if(!is.null(tpl_el$v)){
-    ## vline is "a special geometry that does not work as annotation" (duh)
-    # gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$v,
+    # ylims <- dynGet("ylims")
+    # gg_el <- ggplot2::annotate(geom="segment", x=tpl_el$v,xend=tpl_el$v,
+    #                            y=ylims[1],yend=ylims[2],
     #                            colour=col,linetype=lty,size=lwd)
-#gg_el <- NULL # for now
-    # gg_el <- geom_vline(aes(xintercept = tpl_el$v,colour=tpl_el$col,
-    #                         linetype=tpl_el$lty,size=tpl_el$lwd))
-    ylims <- dynGet("ylims")
-    gg_el <- ggplot2::annotate(geom="segment", x=tpl_el$v,xend=tpl_el$v,
-                               y=ylims[1],yend=ylims[2],
-                               colour=col,linetype=lty,size=lwd)
+    gg_el <- geom_vline(aes(xintercept = tpl_el$v),
+                        linetype=lty,size=lwd,colour=col)
 
   }
 
   if(!is.null(tpl_el$h)){
-    ## hline is "a special geometry that does not work as annotation" (duh)
-    gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$h,slope=0,
-                               colour=col,linetype=lty,size=lwd)
-    
-    # gg_el <- geom_hline(aes(yintercept = tpl_el$h,colour=tpl_el$col,
-    #                         linetype=tpl_el$lty,size=tpl_el$lwd))
+    # xlims <- dynGet("xlims")
+    # gg_el <- ggplot2::annotate(geom="segment", y=tpl_el$h,yend=tpl_el$h,
+    #                            x=xlims[1],xend=xlims[2],
+    #                            colour=col,linetype=lty,size=lwd)
+    gg_el <- geom_hline(aes(yintercept = tpl_el$h),
+                        linetype=lty,size=lwd,colour=col)
   }
   
   if(!is.null(tpl_el$a)){
-    gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$h,slope=tpl_el$b,
-                               colour=col,linetype=lty,size=lwd)
-    
-    # gg_el <- geom_abline(aes(intercept = tpl_el$a,slope=tpl_el$b,
-    #                          colour=tpl_el$col,
-    #                          linetype=tpl_el$lty,size=tpl_el$lwd))
+
+    gg_el <- geom_abline(aes(intercept = tpl_el$a,slope=tpl_el$b),
+                         linetype=lty,size=lwd,colour=col)
+
   }
   
   return(gg_el)
@@ -281,12 +278,12 @@ makePointsElement <- function(tpl_el){
   # Carry the variables from the parent function
   point_size_magic_nbr <- dynGet("point_size_magic_nbr")
   
-  the_pts <- tibble(x=tpl_el$x,y=tpl_el$y)
+  #the_pts <- tibble(x=tpl_el$x,y=tpl_el$y)
   
   if(is.null(tpl_el$cex)){cex<-1}else{cex<-tpl_el$cex}
   
   gg_el <- ggplot2::annotate(geom="point",
-                             x,y,
+                             tpl_el$x,tpl_el$y,
                              colour=tpl_el$col,
                              shape=tpl_el$pch,
                              size=cex*point_size_magic_nbr)
@@ -307,8 +304,11 @@ makeCurveElement <- function(tpl_el){
   #' Convert a figaro curve template element into a ggplot layer
   #' @param tpl_el: the figaro template element (which is a list with several elements)
 
-  gg_el <- geom_function(fun = as.expression(equation),
+  gg_el <- ggplot2::annotate(geom="function",fun = as.expression(equation),
                              colour=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd)
+  
+  # gg_el <- geom_function(fun = as.expression(equation),
+  #                            colour=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd)
   
   return(gg_el)
 }
@@ -391,25 +391,47 @@ makeReservoirsElement <- function(tpl_el){
   if(is.null(tpl_el$cex)){cex<-1}else{cex<-tpl_el$cex}
  
   # Add them to the plot
-  gg_el <- list(geom_point(data=the_res,aes(x=xval,y=yval,
-                                            colour=tpl_el$col,
-                                            shape=tpl_el$pch,
-                                            size=cex*point_size_magic_nbr)),
-                ggplot2::annotate("text",label=tpl_el$labs,
-                                  x=the_res$xval,y=the_res$yval,
-                                  colour=tpl_el$col,
-                                  size=cex*text_size_magic_nbr*0.75,
-                                  hjust = 0.5,
-                                  vjust = -0.5,
-                                  fontface = "bold")
-  )
- 
+  gg_el <- list(
+    ggplot2::annotate(geom="point",x=xval,y=yval,
+                                colour=tpl_el$col,
+                                shape=tpl_el$pch,
+                                size=cex*point_size_magic_nbr),
+    ggplot2::annotate(geom="text",label=tpl_el$labs,
+                      x=the_res$xval,y=the_res$yval,
+                      colour=tpl_el$col,
+                      size=cex*text_size_magic_nbr*0.75,
+                      hjust = 0.5,
+                      vjust = -0.5,
+                      fontface = "bold")
+    )
+  
   tt <- tpl_el[-1]
   if(!is.null(tt$type)&&tt$type=="l"){ 
     gg_el <- c(gg_el,
-               geom_line(data=the_res,aes(x=xval,y=yval,
-                                          colour=tpl_el$col)))
+               ggplot2::annotate(geom="line",
+                                 x=xval,y=yval,
+                                 colour=tpl_el$col))
   }
+  
+  # gg_el <- list(geom_point(data=the_res,aes(x=xval,y=yval,
+  #                                           colour=tpl_el$col,
+  #                                           shape=tpl_el$pch,
+  #                                           size=cex*point_size_magic_nbr)),
+  #               ggplot2::annotate("text",label=tpl_el$labs,
+  #                                 x=the_res$xval,y=the_res$yval,
+  #                                 colour=tpl_el$col,
+  #                                 size=cex*text_size_magic_nbr*0.75,
+  #                                 hjust = 0.5,
+  #                                 vjust = -0.5,
+  #                                 fontface = "bold")
+  # )
+  # 
+  # tt <- tpl_el[-1]
+  # if(!is.null(tt$type)&&tt$type=="l"){ 
+  #   gg_el <- c(gg_el,
+  #              geom_line(data=the_res,aes(x=xval,y=yval,
+  #                                         colour=tpl_el$col)))
+  # }
   
   return(gg_el)
 }
@@ -507,16 +529,19 @@ ggplotDiagram<-function(diagram,plot=T,...){
   
   ## X and Y scale (log or natural)
   
+  xlog <- sheet$demo$call$log=="x"||sheet$demo$call$log=="xy" 
+  ylog <- sheet$demo$call$log=="y"||sheet$demo$call$log=="xy" 
+  
   # Default
   scale_x <- scale_x_continuous(expand=c(0,0))
   scale_y <- scale_y_continuous(expand=c(0,0))
 
   if(!is.null(sheet$demo$call$log)){
-    if(sheet$demo$call$log=="x"||sheet$demo$call$log=="xy" ){
+    if(xlog){
       scale_x <- scale_x_log10(expand=c(0,0))
     }
     
-    if(sheet$demo$call$log=="y"||sheet$demo$call$log=="xy" ){
+    if(ylog){
       scale_y <- scale_y_log10(expand=c(0,0))
     }
   }
