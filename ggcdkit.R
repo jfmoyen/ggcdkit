@@ -105,9 +105,16 @@ makeLineElement <- function(tpl_el){
   #' Convert a figaro line template element into a ggplot layer
   #' @param tpl_el: the figaro template element (which is a list with several elements)
 
-  the_line <- tibble(x=tpl_el$x,y=tpl_el$y)
-  gg_el <- geom_path(data=the_line,aes(x,y,colour=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd))
+# the_line <- tibble(x=tpl_el$x,y=tpl_el$y)
+# gg_el <- geom_path(data=the_line,aes(x,y,colour=tpl_el$col,linetype=tpl_el$lty, size=tpl_el$lwd))
+
+  # We need sensible defaults
+  if(is.null(tpl_el$col)){col<-"black"}else{col<-tpl_el$col}
+  if(is.null(tpl_el$lty)){lty<-"solid"}else{lty<-tpl_el$lty}
+  if(is.null(tpl_el$lwd)){lwd<-1}else{lwd<-tpl_el$lwd}
   
+  gg_el <- ggplot2::annotate(geom="path",x=tpl_el$x, y=tpl_el$y,
+                             colour=col,linetype=lty, size=lwd)
   return(gg_el)
 }
 
