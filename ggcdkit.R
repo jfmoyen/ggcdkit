@@ -230,20 +230,32 @@ makeAblineElement <- function(tpl_el){
     ## vline is "a special geometry that does not work as annotation" (duh)
     # gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$v,
     #                            colour=col,linetype=lty,size=lwd)
-gg_el <- NULL # for now
+#gg_el <- NULL # for now
     # gg_el <- geom_vline(aes(xintercept = tpl_el$v,colour=tpl_el$col,
     #                         linetype=tpl_el$lty,size=tpl_el$lwd))
+    ylims <- dynGet("ylims")
+    gg_el <- ggplot2::annotate(geom="segment", x=tpl_el$v,xend=tpl_el$v,
+                               y=ylims[1],yend=ylims[2],
+                               colour=col,linetype=lty,size=lwd)
+
   }
 
   if(!is.null(tpl_el$h)){
-    gg_el <- geom_hline(aes(yintercept = tpl_el$h,colour=tpl_el$col,
-                            linetype=tpl_el$lty,size=tpl_el$lwd))
+    ## hline is "a special geometry that does not work as annotation" (duh)
+    gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$h,slope=0,
+                               colour=col,linetype=lty,size=lwd)
+    
+    # gg_el <- geom_hline(aes(yintercept = tpl_el$h,colour=tpl_el$col,
+    #                         linetype=tpl_el$lty,size=tpl_el$lwd))
   }
   
   if(!is.null(tpl_el$a)){
-    gg_el <- geom_abline(aes(intercept = tpl_el$a,slope=tpl_el$b,
-                             colour=tpl_el$col,
-                             linetype=tpl_el$lty,size=tpl_el$lwd))
+    gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$h,slope=tpl_el$b,
+                               colour=col,linetype=lty,size=lwd)
+    
+    # gg_el <- geom_abline(aes(intercept = tpl_el$a,slope=tpl_el$b,
+    #                          colour=tpl_el$col,
+    #                          linetype=tpl_el$lty,size=tpl_el$lwd))
   }
   
   return(gg_el)
@@ -525,8 +537,9 @@ ggplotDiagram<-function(diagram,plot=T,...){
   
   # The defaut size of the text is theme_get()$text$size
  
-  plt<- ggplot(plottingDS) + 
-    geom_point(aes(x=x.data, y=y.data,colour=Colour,shape=Symbol,size=Size*point_size_magic_nbr))+
+  plt<- ggplot(plottingDS,
+               aes(x=x.data, y=y.data,colour=Colour,shape=Symbol,size=Size*point_size_magic_nbr)) + 
+    geom_point()+
     map(template,make_templ_element)+
     scale_shape_identity()+
     scale_color_identity()+
