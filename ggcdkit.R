@@ -6,10 +6,10 @@ library(tidyverse)
  # GCDkit is not very careful about that, so we load it last to erase the original (ggplot) annotate
  # Use ggplot annotation layers with EXTREME CARE !
 
-library(conflicted)
-annotate <- GCDkitDevelop::annotate
+# library(conflicted)
+# annotate <- GCDkitDevelop::annotate
 ## Equivalent to:
-#GCDkitDevelop::.assignWithNamespaceHard("annotate",GCDkitDevelop::annotate)
+GCDkitDevelop::.assignWithNamespaceHard("annotate",GCDkitDevelop::annotate)
 
 
 theme_gcdkit <- function () { 
@@ -221,12 +221,20 @@ makeAblineElement <- function(tpl_el){
   #' Convert a figaro abline template element into a ggplot layer
   #' @param tpl_el: the figaro template element (which is a list with several elements)
 
-  # print(tpl_el)
-  if(!is.null(tpl_el$v)){
-    gg_el <- geom_vline(aes(xintercept = tpl_el$v,colour=tpl_el$col,
-                            linetype=tpl_el$lty,size=tpl_el$lwd))
-  }
+  # We need sensible defaults
+  if(is.null(tpl_el$col)){col<-"black"}else{col<-tpl_el$col}
+  if(is.null(tpl_el$lty)){lty<-"solid"}else{lty<-tpl_el$lty}
+  if(is.null(tpl_el$lwd)){lwd<-1}else{lwd<-tpl_el$lwd}
   
+  if(!is.null(tpl_el$v)){
+    ## vline is "a special geometry that does not work as annotation" (duh)
+    # gg_el <- ggplot2::annotate(geom="abline",xintercept = tpl_el$v,
+    #                            colour=col,linetype=lty,size=lwd)
+gg_el <- NULL # for now
+    # gg_el <- geom_vline(aes(xintercept = tpl_el$v,colour=tpl_el$col,
+    #                         linetype=tpl_el$lty,size=tpl_el$lwd))
+  }
+
   if(!is.null(tpl_el$h)){
     gg_el <- geom_hline(aes(yintercept = tpl_el$h,colour=tpl_el$col,
                             linetype=tpl_el$lty,size=tpl_el$lwd))
