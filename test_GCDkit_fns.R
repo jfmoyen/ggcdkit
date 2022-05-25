@@ -75,3 +75,22 @@ x<-sapply(diags,function(i){
   if(substr(i,1,4)!="QAPF") ggplotDiagram(.userlist[.userlist[, 1] == i, 2])
 })  
 
+
+#### Now the real beauty of ggplot comes into action !
+
+accessVar("atacazo")
+p <- ggplotDiagram(TAS)
+p + aes(colour=SiO2)+scale_colour_gradient(low = "blue",high = "red")
+p + facet_wrap(~Volcano)
+p+ scale_colour_gradient(low = "blue",high = "red")+ facet_wrap(~Volcano)
+
+p + facet_wrap(~cut(MgO,breaks=2))
+
+p+facet_grid(Volcano~cut(MgO,breaks=2))
+
+p + coord_cartesian(ylim=c(0,6))
+
+p + coord_polar() ## I'm not sure this is really useful.... 
+p + coord_flip() ## Hmmm..... 
+p + coord_trans(y="sqrt")
+## NB for not not usable for all graphs - only works with lines, ablines and text
