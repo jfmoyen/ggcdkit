@@ -1,5 +1,5 @@
 library(tidyverse)
- 
+ library(GCDkitDevelop)
  # library(ggtern) # For now, ggtern breaks ggplot themes...
  
  # annotate is a function that exists both in GCDkit and in ggplot
@@ -609,7 +609,52 @@ ggplotDiagram<-function(diagram,plot=T,...){
   invisible(plt)
 }
 
+########################################
+#
+# Spider diagrams
+#
+#######################################
 
+
+ggSpider<-function(norm=SelectNorm()){
+  
+ # norm <- selectNorm("Anders & Grevesse 1989")
+  
+  pointsize = par("ps") 
+  
+  text_size_magic_nbr <- pointsize/.pt
+
+  point_size_magic_nbr <- pointsize/5
+  
+  
+  cn <- colnames(norm)
+  rn <- rownames(norm)
+  
+  norm <- as_tibble(norm) %>% mutate(ID="NORM")
+  
+  plottingDS <- norm %>% bind_rows(GCDkitToTibble()) %>%
+    mutate( across(all_of(cn), ~./.[ID == "NORM"] ) ) %>%
+    pivot_longer(all_of(cn),names_to="Element",values_to="Concentration") %>%
+    filter(ID != "NORM")
+    
+  plottingDS %>%
+    ggplot(aes(x=Element,y=Concentration,group=ID,
+            colour=Colour,shape=Symbol,size=Size*point_size_magic_nbr))+
+    geom_path(data = plottingDS[!is.na(plottingDS$Concentration),] ) +
+    geom_point()+
+    xlim(cn)+
+    scale_y_log10()+
+    ylab(rn)+
+    theme_gcdkit()+
+    scale_shape_identity()+
+    scale_color_identity()+
+    scale_fill_identity()+
+    scale_linetype_identity()+
+    scale_size_identity()
+  
+
+  
+}
 
 ################### EXPERIMENTAL CODE ##############################
 
