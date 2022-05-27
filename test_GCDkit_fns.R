@@ -94,3 +94,19 @@ p + coord_polar() ## I'm not sure this is really useful....
 p + coord_flip() ## Hmmm..... 
 p + coord_trans(y="sqrt")
 ## NB for not not usable for all graphs - only works with lines, ablines and text
+
+
+################### Spider plots ########################
+ggSpider(norm=selectNorm("Anders & Grevesse 1989") )
+ggSpider(norm=selectNorm("Anders & Grevesse 1989") , join = F)
+
+ggSpider(norm=selectNorm("Anders & Grevesse 1989") )+
+  aes(color = SiO2,size=0.2) +
+  scale_color_gradient(low="red",high="green")+
+  facet_wrap(~Volcano)
+
+ggSpider()
+
+ggSpider(norm=selectNorm("ATAC-42"))
+
+ggSpider(norm=selectNorm("ATAC-42",REE))

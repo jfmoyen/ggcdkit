@@ -615,32 +615,45 @@ ggplotDiagram<-function(diagram,plot=T,...){
 #
 #######################################
 
-
-ggSpider<-function(norm=SelectNorm()){
-  
- # norm <- selectNorm("Anders & Grevesse 1989")
-  
-  pointsize = par("ps") 
-  
-  text_size_magic_nbr <- pointsize/.pt
-
-  point_size_magic_nbr <- pointsize/5
-  
-  
+prepareSpiderData<-function(what=GCDkitToTibble(), norm=selectNorm()){
   cn <- colnames(norm)
   rn <- rownames(norm)
   
   norm <- as_tibble(norm) %>% mutate(ID="NORM")
   
-  plottingDS <- norm %>% bind_rows(GCDkitToTibble()) %>%
+  plottingDS <- norm %>% bind_rows(what) %>%
     mutate( across(all_of(cn), ~./.[ID == "NORM"] ) ) %>%
     pivot_longer(all_of(cn),names_to="Element",values_to="Concentration") %>%
     filter(ID != "NORM")
+  
+  return(plottingDS)
+}
+
+
+ggSpider<-function(what=GCDkitToTibble(), norm=selectNorm(), plot=T, join=T){
+  
+ # norm <- selectNorm("Anders & Grevesse 1989")
+  
+  pointsize = par("ps") 
+  text_size_magic_nbr <- pointsize/.pt
+  point_size_magic_nbr <- pointsize/5
+
+  cn <- colnames(norm)
+  rn <- rownames(norm)
+  
+  plottingDS <- prepareSpiderData(what, norm)
     
-  plottingDS %>%
+  ## Line connectors
+  if(join){
+    lc <-  geom_path(data = plottingDS[!is.na(plottingDS$Concentration),] ) 
+  }else{
+    lc <- geom_path()
+  }
+  
+  plt<-plottingDS %>%
     ggplot(aes(x=Element,y=Concentration,group=ID,
             colour=Colour,shape=Symbol,size=Size*point_size_magic_nbr))+
-    geom_path(data = plottingDS[!is.na(plottingDS$Concentration),] ) +
+    lc +
     geom_point()+
     xlim(cn)+
     scale_y_log10()+
@@ -652,7 +665,8 @@ ggSpider<-function(norm=SelectNorm()){
     scale_linetype_identity()+
     scale_size_identity()
   
-
+  if(plot){print(plt)}
+  invisible(plt)
   
 }
 
