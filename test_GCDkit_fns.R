@@ -1,7 +1,7 @@
 #### Setup ####
 
-library(GCDkitDevelop)
-
+#library(GCDkitDevelop)
+Sys.setenv(GCDKIT.RUNMODE="noearthchem") 
 source("D:/GitProjects/ggcdkit/ggcdkit.R")
 
 data(atacazo)
@@ -101,7 +101,7 @@ ggSpider(norm=selectNorm("Anders & Grevesse 1989") )
 ggSpider(norm=selectNorm("Anders & Grevesse 1989") , join = F)
 
 ggSpider(norm=selectNorm("Anders & Grevesse 1989") )+
-  aes(color = SiO2,size=0.2) +
+  aes(color = SiO2,size=0.6) +
   scale_color_gradient(low="red",high="green")+
   facet_wrap(~Volcano)
 
@@ -110,3 +110,5 @@ ggSpider()
 ggSpider(norm=selectNorm("ATAC-42"))
 
 ggSpider(norm=selectNorm("ATAC-42",REE))
+
+

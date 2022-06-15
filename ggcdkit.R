@@ -1,5 +1,5 @@
 library(tidyverse)
- library(GCDkitDevelop)
+ library(GCDkit)
  # library(ggtern) # For now, ggtern breaks ggplot themes...
  
  # annotate is a function that exists both in GCDkit and in ggplot
@@ -9,7 +9,7 @@ library(tidyverse)
 # library(conflicted)
 # annotate <- GCDkitDevelop::annotate
 ## Equivalent to:
-GCDkitDevelop::.assignWithNamespaceHard("annotate",GCDkitDevelop::annotate)
+GCDkit::.assignWithNamespaceHard("annotate",GCDkit::annotate)
 
 
 theme_gcdkit <- function () { 
@@ -575,9 +575,8 @@ ggplotDiagram<-function(diagram,plot=T,...){
   # ggplot has default symbol size of 5 mm (see GeomPoint$default_aes ? ) compared to <pointsize> pts in basic R
   # So to emulate the graphs we must account for that
   point_size_magic_nbr <- pointsize/5
-  
+
   # The defaut size of the text is theme_get()$text$size
- 
   plt<- ggplot(plottingDS,
                aes(x=x.data, y=y.data,colour=Colour,shape=Symbol,size=Size*point_size_magic_nbr)) + 
     geom_point()+
